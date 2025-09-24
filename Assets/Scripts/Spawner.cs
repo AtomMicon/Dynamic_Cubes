@@ -5,6 +5,7 @@ using UnityEngine.Pool;
 public class Spawner : MonoBehaviour
 {
     [SerializeField] private GameObject _prefab;
+    [SerializeField] private Clicker _clicker;
     [SerializeField] private float _xArea;
     [SerializeField] private float _zArea;
     [SerializeField] private float _yHeight;
@@ -19,18 +20,41 @@ public class Spawner : MonoBehaviour
     {
         _pool = new ObjectPool<GameObject>(
             createFunc: () => Instantiate(_prefab),
-            actionOnGet: (obj) => SpawnCube(obj),
+            actionOnGet: (obj) => InstantiateCube(obj),
             collectionCheck: true,
             defaultCapacity: _poolCapasity,
             maxSize: _poolMaxSize
             );
     }
 
+    private void OnEnable()
+    {
+        _clicker.Clicked += SpawnCube;
+    }
 
-    private void SpawnCube(GameObject cube)
+    private void OnDisable()
+    {
+        _clicker.Clicked -= SpawnCube;
+    }
+
+    private void SpawnCube()
+    {
+        Debug.Log("SpawnCube");
+        GameObject cube = _pool.Get();
+        InstantiateCube(cube);
+        float lifeTime = GetLifeTime();
+        ReturnToPool(cube, lifeTime);
+    }
+
+    private void InstantiateCube(GameObject cube)
     {
         cube.transform.position = GetSpawnPosition();
-        InstantiateComponents(cube);
+    }
+
+    private async void ReturnToPool(GameObject cube, float lifeTime)
+    {
+        await System.Threading.Tasks.Task.Delay((int)(lifeTime * 1000));
+        _pool.Release(cube);
     }
 
     private Vector3 GetSpawnPosition()
@@ -43,12 +67,5 @@ public class Spawner : MonoBehaviour
     private float GetLifeTime()
     {
         return Random.Range(_cubeMinLifeTime, _cubeMaxLifeTime);
-    }
-
-    private void InstantiateComponents(GameObject cube)
-    {
-        cube.AddComponent<Rigidbody>();
-        cube.AddComponent<BoxCollider>();
-        cube.AddComponent<MeshRenderer>();
     }
 }
