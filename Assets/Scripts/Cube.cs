@@ -44,8 +44,7 @@ public class Cube : MonoBehaviour
         Debug.Log("HitOnPlane");
         StartCoroutine(WaitRoutine());
 
-        GameObject cube = GetComponent<GameObject>();
-        Hitted?.Invoke(cube);
+        Hitted?.Invoke(gameObject);
         Debug.Log("Hitted event invoked");
     }
 
