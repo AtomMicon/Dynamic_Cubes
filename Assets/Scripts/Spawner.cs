@@ -6,11 +6,10 @@ public class Spawner : MonoBehaviour
 {
     [SerializeField] private GameObject _prefab;
     [SerializeField] private Clicker _clicker;
+    [SerializeField] private Cube _cube;
     [SerializeField] private float _xArea;
     [SerializeField] private float _zArea;
     [SerializeField] private float _yHeight;
-    [SerializeField] private float _cubeMinLifeTime = 2f;
-    [SerializeField] private float _cubeMaxLifeTime = 5f;
     [SerializeField] private int _poolCapasity = 8;
     [SerializeField] private int _poolMaxSize = 10;
 
@@ -30,11 +29,13 @@ public class Spawner : MonoBehaviour
     private void OnEnable()
     {
         _clicker.Clicked += SpawnCube;
+        _cube.Hitted += ReturnCubeToPool;
     }
 
     private void OnDisable()
     {
         _clicker.Clicked -= SpawnCube;
+        _cube.Hitted -= ReturnCubeToPool;
     }
 
     private void SpawnCube()
@@ -42,8 +43,12 @@ public class Spawner : MonoBehaviour
         Debug.Log("SpawnCube");
         GameObject cube = _pool.Get();
         InstantiateCube(cube);
-        float lifeTime = GetLifeTime();
-        ReturnToPool(cube, lifeTime);
+    }
+
+    private void ReturnCubeToPool(GameObject cube)
+    {
+        cube.SetActive(false);
+        _pool.Release(cube);
     }
 
     private void InstantiateCube(GameObject cube)
@@ -51,21 +56,10 @@ public class Spawner : MonoBehaviour
         cube.transform.position = GetSpawnPosition();
     }
 
-    private async void ReturnToPool(GameObject cube, float lifeTime)
-    {
-        await System.Threading.Tasks.Task.Delay((int)(lifeTime * 1000));
-        _pool.Release(cube);
-    }
-
     private Vector3 GetSpawnPosition()
     {
         float xPosition = Random.Range(-_xArea, _xArea);
         float zPosition = Random.Range(-_zArea, _zArea);
         return new Vector3(xPosition, _yHeight, zPosition);
-    }
-
-    private float GetLifeTime()
-    {
-        return Random.Range(_cubeMinLifeTime, _cubeMaxLifeTime);
     }
 }
