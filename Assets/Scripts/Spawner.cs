@@ -39,14 +39,12 @@ public class Spawner : MonoBehaviour
 
     private void GetCube()
     {
-        Debug.Log("SpawnCube");
         Cube cube = _pool.Get();
         cube.Hitted += ReturnCube;
     }
 
     private void ReturnCube(Cube cube)
     {
-        Debug.Log("ReturnCubeToPool");
         _pool.Release(cube);
         cube.Hitted -= ReturnCube;
     }
