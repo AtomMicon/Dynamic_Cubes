@@ -151,4 +151,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _cubeMinLifeTime: 2
   _cubeMaxLifeTime: 5
-  _hitMaxCount: 1
+  _rigidbody: {fileID: 2425364509508593892}

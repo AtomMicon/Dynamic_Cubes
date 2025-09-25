@@ -4,8 +4,7 @@ using UnityEngine.Pool;
 
 public class Spawner : MonoBehaviour
 {
-    [SerializeField] private GameObject _prefab;
-    [SerializeField] private Cube _cube;
+    [SerializeField] private Cube _prefab;
     [SerializeField] private Clicker _clicker;
     [SerializeField] private float _xArea;
     [SerializeField] private float _zArea;
@@ -13,15 +12,15 @@ public class Spawner : MonoBehaviour
     [SerializeField] private int _poolCapasity = 8;
     [SerializeField] private int _poolMaxSize = 10;
 
-    private ObjectPool<GameObject> _pool;
+    private ObjectPool<Cube> _pool;
 
     private void Awake()
     {
-        _pool = new ObjectPool<GameObject>(
+        _pool = new ObjectPool<Cube>(
             createFunc: () => Instantiate(_prefab),
             actionOnGet: (cube) => InstantiateCube(cube),
-            actionOnRelease: (obj) => obj.SetActive(false),
-            actionOnDestroy: (obj) => Destroy(obj),
+            actionOnRelease: (cube) => OnRealize(cube),
+            actionOnDestroy: (cube) => Destroy(cube.gameObject),
             collectionCheck: true,
             defaultCapacity: _poolCapasity,
             maxSize: _poolMaxSize
@@ -30,32 +29,38 @@ public class Spawner : MonoBehaviour
 
     private void OnEnable()
     {
-        _clicker.Clicked += SpawnCube;
-        _cube.Hitted += ReturnCubeToPool;
+        _clicker.Clicked += GetCube;
     }
 
     private void OnDisable()
     {
-        _clicker.Clicked -= SpawnCube;
-        _cube.Hitted -= ReturnCubeToPool;
+        _clicker.Clicked -= GetCube;
     }
 
-    private void SpawnCube()
+    private void GetCube()
     {
         Debug.Log("SpawnCube");
-        GameObject cube = _pool.Get();
+        Cube cube = _pool.Get();
+        cube.Hitted += ReturnCube;
     }
 
-    private void ReturnCubeToPool(GameObject cube)
+    private void ReturnCube(Cube cube)
     {
         Debug.Log("ReturnCubeToPool");
         _pool.Release(cube);
+        cube.Hitted -= ReturnCube;
     }
 
-    private void InstantiateCube(GameObject cube)
+    private void OnRealize(Cube cube)
+    {
+        cube.ResetCube();
+        cube.gameObject.SetActive(false);
+    }
+
+    private void InstantiateCube(Cube cube)
     {
         cube.transform.position = GetSpawnPosition();
-        cube.SetActive(true);
+        cube.gameObject.SetActive(true);
     }
 
     private Vector3 GetSpawnPosition()

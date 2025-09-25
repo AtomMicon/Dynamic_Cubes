@@ -10,13 +10,13 @@ public class Cube : MonoBehaviour
 {
     [SerializeField] private float _cubeMinLifeTime = 2f;
     [SerializeField] private float _cubeMaxLifeTime = 5f;
-    [SerializeField] private int _hitMaxCount = 1;
+    [SerializeField] private Rigidbody _rigidbody;
 
-    public event Action<GameObject> Hitted;
+    public event Action<Cube> Hitted;
 
     private float _lifeTime;
     private Renderer _renderer;
-    private int _hitCount;
+    private bool _isHitted = false;
 
     private void Awake()
     {
@@ -26,15 +26,25 @@ public class Cube : MonoBehaviour
     private void Start()
     {
         _lifeTime = GetLifeTime();
+        _renderer.material.color = Color.white;
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (_hitCount < _hitMaxCount)
+        if (_isHitted == false)
         {
             HitOnPlane();
-            _hitCount++;
+            _isHitted = true;
         }
+    }
+
+    public void ResetCube()
+    {
+        _isHitted = false;
+        _renderer.material.color = Color.white;
+        transform.rotation = Quaternion.Euler(0, 0, 0);
+        _rigidbody.linearVelocity = Vector3.zero;
+        _rigidbody.angularVelocity = Vector3.zero;
     }
 
     private void HitOnPlane()
@@ -44,7 +54,6 @@ public class Cube : MonoBehaviour
         Debug.Log("HitOnPlane");
         
         StartCoroutine(WaitRoutine());
-        Hitted?.Invoke(this.gameObject);
 
         Debug.Log("Hitted event invoked");
     }
@@ -54,6 +63,8 @@ public class Cube : MonoBehaviour
         Debug.Log("WaitRoutine started: " + _lifeTime);
         yield return new WaitForSeconds(_lifeTime);
         Debug.Log("WaitRoutine ended");
+
+        Hitted?.Invoke(this);
     }
 
     private float GetLifeTime()

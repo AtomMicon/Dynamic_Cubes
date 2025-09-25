@@ -783,8 +783,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fce5f61f205353f4396bef9798fe363e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _prefab: {fileID: 7076579737173616205, guid: 3d6e92f4117fdc746b16e6f3b2d3e1d0, type: 3}
-  _cube: {fileID: 7921982170160219509, guid: 3d6e92f4117fdc746b16e6f3b2d3e1d0, type: 3}
+  _prefab: {fileID: 7921982170160219509, guid: 3d6e92f4117fdc746b16e6f3b2d3e1d0, type: 3}
   _clicker: {fileID: 2059978298}
   _xArea: 5
   _zArea: 5
