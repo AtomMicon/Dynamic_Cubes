@@ -48,11 +48,8 @@ public class Spawner : MonoBehaviour
 
     private void ReturnCubeToPool(GameObject cube)
     {
-        if (cube != null)
-        {
-            Debug.Log("ReturnCubeToPool");
-            _pool.Release(cube);
-        }
+        Debug.Log("ReturnCubeToPool");
+        _pool.Release(cube);
     }
 
     private void InstantiateCube(GameObject cube)
