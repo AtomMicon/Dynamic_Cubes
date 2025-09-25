@@ -42,8 +42,10 @@ public class Cube : MonoBehaviour
         ChangeColor();
 
         Debug.Log("HitOnPlane");
+        
         StartCoroutine(WaitRoutine());
-        Hitted?.Invoke(gameObject);
+        Hitted?.Invoke(this.gameObject);
+
         Debug.Log("Hitted event invoked");
     }
 

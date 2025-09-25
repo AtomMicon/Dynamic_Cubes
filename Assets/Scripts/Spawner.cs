@@ -4,6 +4,7 @@ using UnityEngine.Pool;
 
 public class Spawner : MonoBehaviour
 {
+    [SerializeField] private GameObject _prefab;
     [SerializeField] private Cube _cube;
     [SerializeField] private Clicker _clicker;
     [SerializeField] private float _xArea;
@@ -12,14 +13,15 @@ public class Spawner : MonoBehaviour
     [SerializeField] private int _poolCapasity = 8;
     [SerializeField] private int _poolMaxSize = 10;
 
-    private ObjectPool<Cube> _pool;
+    private ObjectPool<GameObject> _pool;
 
     private void Awake()
     {
-        _pool = new ObjectPool<Cube>(
-            createFunc: () => Instantiate(_cube),
+        _pool = new ObjectPool<GameObject>(
+            createFunc: () => Instantiate(_prefab),
             actionOnGet: (cube) => InstantiateCube(cube),
-            actionOnRelease: (cube) => ReturnCubeToPool(cube),
+            actionOnRelease: (obj) => obj.SetActive(false),
+            actionOnDestroy: (obj) => Destroy(obj),
             collectionCheck: true,
             defaultCapacity: _poolCapasity,
             maxSize: _poolMaxSize
@@ -41,14 +43,11 @@ public class Spawner : MonoBehaviour
     private void SpawnCube()
     {
         Debug.Log("SpawnCube");
-        Cube cube = _pool.Get();
-        InstantiateCube(cube);
+        GameObject cube = _pool.Get();
     }
 
-    private void ReturnCubeToPool(GameObject gameObject)
+    private void ReturnCubeToPool(GameObject cube)
     {
-        Cube cube = gameObject.GetComponent<Cube>();
-
         if (cube != null)
         {
             Debug.Log("ReturnCubeToPool");
@@ -56,9 +55,10 @@ public class Spawner : MonoBehaviour
         }
     }
 
-    private void InstantiateCube(Cube cube)
+    private void InstantiateCube(GameObject cube)
     {
         cube.transform.position = GetSpawnPosition();
+        cube.SetActive(true);
     }
 
     private Vector3 GetSpawnPosition()
