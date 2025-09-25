@@ -18,7 +18,8 @@ public class Spawner : MonoBehaviour
     {
         _pool = new ObjectPool<Cube>(
             createFunc: () => Instantiate(_cube),
-            actionOnGet: (@object) => InstantiateCube(@object),
+            actionOnGet: (cube) => InstantiateCube(cube),
+            actionOnRelease: (cube) => ReturnCubeToPool(cube),
             collectionCheck: true,
             defaultCapacity: _poolCapasity,
             maxSize: _poolMaxSize

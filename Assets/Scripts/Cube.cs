@@ -43,7 +43,6 @@ public class Cube : MonoBehaviour
 
         Debug.Log("HitOnPlane");
         StartCoroutine(WaitRoutine());
-
         Hitted?.Invoke(gameObject);
         Debug.Log("Hitted event invoked");
     }
