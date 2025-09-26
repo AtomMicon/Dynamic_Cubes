@@ -15,15 +15,18 @@ public class Cube : MonoBehaviour
 
     private float _lifeTime;
     private bool _isHitted = false;
+    private Renderer _renderer;
 
     public event Action<Cube> Hitted;
 
     private void Start()
     {
         _lifeTime = CalculateLifeTime();
+
         if (TryGetComponent<Renderer>(out var renderer))
         {
-            _colorChanger.ResetColor(renderer);
+            _renderer = renderer;
+            _colorChanger.ResetColor(_renderer);
         }
     }
 
@@ -38,10 +41,7 @@ public class Cube : MonoBehaviour
 
     public void ResetCube()
     {
-        if (TryGetComponent<Renderer>(out var renderer))
-        {
-            _colorChanger.ResetColor(renderer);
-        }
+        _colorChanger.ResetColor(_renderer);
 
         _lifeTime = CalculateLifeTime();
         _isHitted = false;
@@ -52,10 +52,7 @@ public class Cube : MonoBehaviour
 
     private void HitOnPlane()
     {
-        if (TryGetComponent<Renderer>(out var renderer))
-        {
-            _colorChanger.ChangeColor(renderer);
-        }
+        _colorChanger.ChangeColor(_renderer);
 
         StartCoroutine(WaitRoutine());
     }
