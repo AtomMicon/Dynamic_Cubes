@@ -13,15 +13,18 @@ public class Cube : MonoBehaviour
     [SerializeField] private Rigidbody _rigidbody;
     [SerializeField] private ColorChanger _colorChanger;
 
-    public event Action<Cube> Hitted;
-
     private float _lifeTime;
     private bool _isHitted = false;
 
+    public event Action<Cube> Hitted;
+
     private void Start()
     {
-        _lifeTime = GetLifeTime();
-        _colorChanger.ResetColor(this);
+        _lifeTime = CalculateLifeTime();
+        if (TryGetComponent<Renderer>(out var renderer))
+        {
+            _colorChanger.ResetColor(renderer);
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -35,8 +38,13 @@ public class Cube : MonoBehaviour
 
     public void ResetCube()
     {
+        if (TryGetComponent<Renderer>(out var renderer))
+        {
+            _colorChanger.ResetColor(renderer);
+        }
+
+        _lifeTime = CalculateLifeTime();
         _isHitted = false;
-        _colorChanger.ResetColor(this);
         transform.rotation = Quaternion.Euler(0, 0, 0);
         _rigidbody.linearVelocity = Vector3.zero;
         _rigidbody.angularVelocity = Vector3.zero;
@@ -44,7 +52,11 @@ public class Cube : MonoBehaviour
 
     private void HitOnPlane()
     {
-        _colorChanger.ChangeColor(this);
+        if (TryGetComponent<Renderer>(out var renderer))
+        {
+            _colorChanger.ChangeColor(renderer);
+        }
+
         StartCoroutine(WaitRoutine());
     }
 
@@ -54,7 +66,7 @@ public class Cube : MonoBehaviour
         Hitted?.Invoke(this);
     }
 
-    private float GetLifeTime()
+    private float CalculateLifeTime()
     {
         return UnityEngine.Random.Range(_cubeMinLifeTime, _cubeMaxLifeTime);
     }

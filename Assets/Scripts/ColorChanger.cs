@@ -2,13 +2,13 @@ using UnityEngine;
 
 public class ColorChanger : MonoBehaviour
 {
-    public void ResetColor(Cube cube)
+    public void ResetColor(Renderer renderer)
     {
-        cube.GetComponent<Renderer>().material.color = Color.white;
+        renderer.material.color = Color.white;
     }
 
-    public void ChangeColor(Cube cube)
+    public void ChangeColor(Renderer renderer)
     {
-        cube.GetComponent<Renderer>().material.color = new Color(Random.value, Random.value, Random.value);
+        renderer.material.color = new Color(Random.value, Random.value, Random.value);
     }
 }
